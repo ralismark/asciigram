@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../canvas.hpp"
-
+#include <map>
 
 struct SimpleStringRenderer
 	: public Canvas
