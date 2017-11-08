@@ -32,12 +32,12 @@ public:
 		mvaddch(y, x, fill);
 	}
 
-	virtual void impl_vline(char fill, int x, int y1, int y2) override
+	virtual void impl_linev(char fill, int x, int y1, int y2) override
 	{
 		mvvline(y1, x, fill, y2 - y1);
 	}
 
-	virtual void impl_hline(char fill, int x1, int y, int x2) override
+	virtual void impl_lineh(char fill, int x1, int y, int x2) override
 	{
 		mvhline(y, x1, fill, x2 - x1);
 	}

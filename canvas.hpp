@@ -25,7 +25,7 @@ protected:
 
 	// implement: change a vertical interval
 	// assume: fill != '\0', y1 < y2
-	virtual void impl_vline(char fill, int x, int y1, int y2)
+	virtual void impl_linev(char fill, int x, int y1, int y2)
 	{
 		for(int y = y1; y <= y2; ++y) {
 			this->set(fill, x, y);
@@ -34,7 +34,7 @@ protected:
 
 	// implement: change a horizontal interval
 	// assume: fill != '\0', x1 < x2
-	virtual void impl_hline(char fill, int x1, int y, int x2)
+	virtual void impl_lineh(char fill, int x1, int y, int x2)
 	{
 		for(int x = x1; x <= x2; ++x) {
 			this->set(fill, x, y);
@@ -46,7 +46,7 @@ protected:
 	virtual void impl_fill(char fill, int x1, int y1, int x2, int y2)
 	{
 		for(int y = y1; y <= y2; ++y) {
-			this->impl_hline(fill, x1, y, x2);
+			this->impl_lineh(fill, x1, y, x2);
 		}
 	}
 
@@ -73,19 +73,19 @@ public:
 
 	// draw a vertical line of `fill` from (x,y) to (x,y2) inclusive
 	// ensure: y < y2
-	void vline(char fill, int x, int y1, int y2)
+	void linev(char fill, int x, int y1, int y2)
 	{
 		if(fill != Transparent) {
-			this->impl_vline(fill, x, y1, y2);
+			this->impl_linev(fill, x, y1, y2);
 		}
 	}
 
 	// draw a horizontal line of `fill` from (x,y) to (x2,y) inclusive
 	// ensure: x < x2
-	void hline(char fill, int x1, int y, int x2)
+	void lineh(char fill, int x1, int y, int x2)
 	{
 		if(fill != Transparent) {
-			this->impl_hline(fill, x1, y, x2);
+			this->impl_lineh(fill, x1, y, x2);
 		}
 	}
 

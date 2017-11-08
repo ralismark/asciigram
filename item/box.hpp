@@ -72,10 +72,10 @@ public:
 
 		canvas.fill(style->fill, norm.x1, norm.y1, norm.x2, norm.y2);
 
-		canvas.hline(style->tside, norm.x1, norm.y1, norm.x2);
-		canvas.hline(style->bside, norm.x1, norm.y2, norm.x2);
-		canvas.vline(style->lside, norm.x1, norm.y1, norm.y2);
-		canvas.vline(style->rside, norm.x2, norm.y1, norm.y2);
+		canvas.lineh(style->tside, norm.x1, norm.y1, norm.x2);
+		canvas.lineh(style->bside, norm.x1, norm.y2, norm.x2);
+		canvas.linev(style->lside, norm.x1, norm.y1, norm.y2);
+		canvas.linev(style->rside, norm.x2, norm.y1, norm.y2);
 
 		canvas.set(style->tl_corner, norm.x1, norm.y1);
 		canvas.set(style->tr_corner, norm.x2, norm.y1);
