@@ -1,3 +1,4 @@
+#include "layer.hpp"
 #include "renderer.hpp"
 #include "styleman.hpp"
 
