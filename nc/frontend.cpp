@@ -7,9 +7,7 @@
 #include "../item/text.hpp"
 
 #include <ncurses.h>
-
-#include <functional>
-#include <map>
+#include <cctype>
 
 struct OwnerFinder // {{{
 	: public Canvas
@@ -33,17 +31,22 @@ public:
 
 enum class Mode {
 	Normal,
-	Box
+	Move,
+	Box,
+	Insert,
+	InsertBlock,
+
+	Quit,
 } mode = Mode::Normal;
-bool quit = false;
 
 StyleManager sm;
 ElementStack es;
 CursesRenderer crender;
+LayerStack ls;
 
 struct {
 	int x, y;
-} cur;
+} cur, region;
 
 int idhere()
 {
@@ -55,10 +58,8 @@ int idhere()
 	return of.target_id;
 }
 
-auto setmode_f(Mode m)
-{
-	return [m] { mode = m; };
-}
+// wrapper for when we need to actually switch around layers
+void setmode(Mode m);
 
 template <typename F>
 auto ifhere_f(F fn)
@@ -71,77 +72,273 @@ auto ifhere_f(F fn)
 	};
 }
 
-std::map<int, std::function<void()>> box_km()
+// Default response to actions
+struct Universal
+	: public Layer
 {
-	std::map<int, std::function<void()>> km;
+	virtual bool event(int val) override
+	{
+		switch(val) {
+		case '\033': // escape to normal
+			setmode(Mode::Normal);
+			break;
+		case 'h':
+			--cur.x;
+			break;
+		case 'j':
+			++cur.y;
+			break;
+		case 'k':
+			--cur.y;
+			break;
+		case 'l':
+			++cur.x;
+			break;
+		case 'H':
+			es.shift(1, 0);
+			++cur.x;
+			break;
+		case 'J':
+			es.shift(0, -1);
+			--cur.y;
+			break;
+		case 'K':
+			es.shift(0, 1);
+			++cur.y;
+			break;
+		case 'L':
+			es.shift(-1, 0);
+			--cur.x;
+			break;
+		case 'q':
+			setmode(Mode::Quit);
+			break;
+		default:
+			mvprintw(1, 0, "key %d", val);
+			return true;
+		}
+		return false;
+	}
+};
 
-	km[0] = [] {
+struct NormalMode
+	: public Layer
+{
+	virtual bool event(int val) override
+	{
+		int here = idhere();
+		switch(val) {
+		case '?':
+			if(here != -1) {
+				mvprintw(1, 0, "id here: %d", here);
+			}
+			break;
+		case 'x':
+			if(here != -1) {
+				es.elements.erase(es.elements.begin() + here);
+			}
+			break;
+		case 'b':
+			setmode(Mode::Box);
+			break;
+		case 'i':
+			setmode(Mode::Insert);
+			break;
+		case 'm':
+			if(here != -1) {
+				setmode(Mode::Move);
+			}
+			break;
+		default:
+			return true;
+		}
+		return false;
+	}
+};
+
+struct MoveMode
+	: public Layer
+{
+	int id;
+public:
+	MoveMode()
+		: id(idhere())
+	{
+	}
+
+	virtual bool event(int val) override
+	{
+		if(id != -1) {
+			switch(val) {
+			case 'h':
+				es.elements[id]->shift(-1, 0);
+				break;
+			case 'j':
+				es.elements[id]->shift(0, 1);
+				break;
+			case 'k':
+				es.elements[id]->shift(0, -1);
+				break;
+			case 'l':
+				es.elements[id]->shift(1, 0);
+				break;
+			}
+		}
+		if(val == 'm') {
+			setmode(Mode::Normal);
+			return false;
+		}
+		return true;
+	}
+};
+
+// drawing a box
+struct BoxMode
+	: public Layer
+{
+	BoxMode()
+	{
+		es.add<Box>(cur.x, cur.y, sm.get_default());
+	}
+
+	virtual bool event(int val) override
+	{
+		switch(val) {
+		case 'x':
+			es.elements.pop_back();
+			setmode(Mode::Normal);
+			break;
+		case 'b':
+			setmode(Mode::Normal);
+			break;
+		default:
+			return true;
+		}
+		return false;
+	}
+
+	virtual void frame()
+	{
 		auto box = es.back_as<Box>();
 		box->x2 = cur.x;
 		box->y2 = cur.y;
-	};
+	}
+};
 
-	km['\033'] = setmode_f(Mode::Normal);
-
-	km['h'] = [] { --cur.x; };
-	km['j'] = [] { ++cur.y; };
-	km['k'] = [] { --cur.y; };
-	km['l'] = [] { ++cur.x; };
-
-	km['x'] = [] { mode = Mode::Normal; es.elements.pop_back(); };
-
-	km['b'] = setmode_f(Mode::Normal);
-
-	return km;
-}
-
-std::map<int, std::function<void()>> normal_km()
+struct InsertMode
+	: public Layer
 {
-	std::map<int, std::function<void()>> km;
+	InsertMode()
+	{
+		// TODO: re-inherit and edit existing value
+		es.add<Text>(cur.x, cur.y);
+	}
 
-	km['q'] = [] { quit = true; };
+	~InsertMode()
+	{
+		if(es.back_as<Text>()->string.empty()) {
+			es.elements.pop_back();
+		}
+	}
 
-	km['h'] = [] { --cur.x; };
-	km['j'] = [] { ++cur.y; };
-	km['k'] = [] { --cur.y; };
-	km['l'] = [] { ++cur.x; };
+	virtual bool event(int val) override
+	{
+		if(isprint(val)) {
+			es.back_as<Text>()->string.push_back(val);
+			++cur.x;
+			return false;
+		}
+		switch(val) {
+		case KEY_BACKSPACE:
+			if(!es.back_as<Text>()->string.empty()) {
+				es.back_as<Text>()->string.pop_back();
+				--cur.x;
+			}
+			break;
+		default:
+			return true;
+		}
+		return false;
+	}
+};
 
-	km['?'] = ifhere_f([] (int id) { mvprintw(1, 0, "Id %d"); });
-	km['x'] = ifhere_f([] (int id) { es.elements.erase(es.elements.begin() + id); });
-	km['b'] = [] { mode = Mode::Box; es.add<Box>(cur.x, cur.y, sm.get_default()); };
+// wrapper for when we need to actually switch around layers
+void setmode(Mode m)
+{
+	mode = m;
+	ls.layers[1].reset();
 
-	return km;
+	switch(mode) {
+	case Mode::Normal:
+		ls.layers[1] = std::make_unique<NormalMode>();
+		break;
+	case Mode::Box:
+		ls.layers[1] = std::make_unique<BoxMode>();
+		break;
+	case Mode::Insert:
+		ls.layers[1] = std::make_unique<InsertMode>();
+		break;
+	case Mode::Move:
+		ls.layers[1] = std::make_unique<MoveMode>();
+		break;
+	case Mode::Quit:
+		break;
+	default:
+		setmode(Mode::Normal);
+	}
 }
 
 int main()
 {
+	cur.x = 0; cur.y = 1;
+
 	CursesSetup cs;
 
-	std::map<Mode, std::map<int, std::function<void()>>> keymaps;
-	keymaps[Mode::Normal] = normal_km();
-	keymaps[Mode::Box] = box_km();
+	// 0: Universal
+	ls.layers.emplace_back(std::make_unique<Universal>());
+
+	// 1: Mode
+	ls.layers.emplace_back();
+	setmode(Mode::Normal);
 
 	for(int input = ' '; true; input = getch()) {
-		getyx(stdscr, cur.y, cur.x);
+		getmaxyx(stdscr, region.y, region.x);
 		erase();
+		--region.y; --region.x;
 
-		if(keymaps[mode].count(input)) {
-			keymaps[mode].at(input)();
-		}
-
-		if(keymaps[mode].count(0)) {
-			keymaps[mode].at(0)();
-		}
+		ls.event(input);
+		ls.frame();
 
 		es.draw(crender);
 
-		const char* mode_names[] = { "Normal", "Box" };
-		mvprintw(0, 0, "-- %s --", mode_names[static_cast<int>(mode)]);
+		const char* mode_name = "???";
 
-		move(cur.y, cur.x);
+		switch(mode) {
+		case Mode::Normal:
+			mode_name = "Normal";
+			break;
+		case Mode::Box:
+			mode_name = "Box";
+			break;
+		case Mode::Insert:
+			mode_name = "Insert";
+			break;
+		case Mode::InsertBlock:
+			mode_name = "InsertBlock";
+			break;
+		case Mode::Move:
+			mode_name = "Move";
+			break;
+		}
+
+		mvprintw(0, 0, "-- %s --", mode_name);
+
+		auto clamp = [] (int val, int high) { return val < 0 ? 0 : val > high ? high : val; };
+
+		move(clamp(cur.y, region.y), clamp(cur.x, region.x));
 		refresh();
 
-		if(quit) {
+		if(mode == Mode::Quit) {
 			break;
 		}
 	}
