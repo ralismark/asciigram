@@ -8,4 +8,5 @@ struct Drawable
 	virtual ~Drawable() = default;
 
 	virtual void draw(Canvas& canvas) const = 0;
+	virtual void shift(int x, int y) = 0;
 };

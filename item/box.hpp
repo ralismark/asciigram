@@ -82,4 +82,12 @@ public:
 		canvas.set(style->bl_corner, norm.x1, norm.y2);
 		canvas.set(style->br_corner, norm.x2, norm.y2);
 	}
+
+	virtual void shift(int x, int y) override
+	{
+		x1 += x;
+		x2 += x;
+		y1 += y;
+		y2 += y;
+	}
 };

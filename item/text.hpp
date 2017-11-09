@@ -18,4 +18,10 @@ public:
 	{
 		canvas.direct(string, x, y);
 	}
+
+	virtual void shift(int ox, int oy) override
+	{
+		x += ox;
+		y += oy;
+	}
 };

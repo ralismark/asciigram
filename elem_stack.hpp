@@ -18,6 +18,13 @@ public:
 		}
 	}
 
+	virtual void shift(int x, int y)
+	{
+		for(auto& elem : elements) {
+			elem->shift(x, y);
+		}
+	}
+
 	template <typename T, typename... Args>
 	void add(Args&&... args)
 	{
