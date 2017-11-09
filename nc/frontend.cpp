@@ -89,16 +89,57 @@ public:
 // wrapper for when we need to actually switch around layers
 void setmode(Mode m);
 
-template <typename F>
-auto ifhere_f(F fn)
+// change styles
+struct StyleChangerLayer
+	: public Layer
 {
-	return [fn] {
-		int id = idhere();
-		if(id != -1) {
-			fn(id);
+	StyleChanger sc;
+	int part;
+	char val;
+public:
+	StyleChangerLayer()
+		: sc(sm.get_default())
+		, part(0)
+		, val(0)
+	{
+	}
+
+	virtual bool event(int ev) override
+	{
+		if(part != 0) {
+			if(isprint(ev)) {
+				*sc.at_id(part, *sc.style) = ev;
+			} else if(ev == KEY_BACKSPACE) {
+				*sc.at_id(part, *sc.style) = Canvas::Transparent;
+			} else {
+				*sc.at_id(part, *sc.style) = val;
+			}
+			part = 0;
+			return false;
 		}
-	};
-}
+
+		switch(ev) {
+		case 'q':
+		case 's':
+		case '\033':
+			ls.layers.pop_back();
+			break;
+		case '1': case '2': case '3':
+		case '4': case '5': case '6':
+		case '7': case '8': case '9':
+			part = ev - '0';
+			val = *sc.at_id(part, *sc.style);
+			*sc.at_id(part, *sc.style) = '#';
+			break;
+		}
+		return false;
+	}
+
+	virtual void post() override
+	{
+		sc.render();
+	}
+};
 
 // Default response to actions
 struct Universal
@@ -177,6 +218,9 @@ struct NormalMode
 			if(here != -1) {
 				setmode(Mode::Move);
 			}
+			break;
+		case 's':
+			ls.layers.emplace_back(std::make_unique<StyleChangerLayer>());
 			break;
 		default:
 			return true;
@@ -366,6 +410,8 @@ int main()
 
 		move(clamp(cur.y, region.y), clamp(cur.x, region.x));
 		refresh();
+
+		ls.post();
 
 		if(mode == Mode::Quit) {
 			break;

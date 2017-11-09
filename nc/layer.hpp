@@ -16,6 +16,9 @@ public:
 
 	// run stuff after events, per frame
 	virtual void frame() {}
+
+	// run stuff after rendering (e.g. for higher windows)
+	virtual void post() {}
 };
 
 // a sequence of layers
@@ -41,6 +44,15 @@ public:
 		for(auto& layer : layers) {
 			if(layer) {
 				layer->frame();
+			}
+		}
+	}
+
+	void post()
+	{
+		for(auto& layer : layers) {
+			if(layer) {
+				layer->post();
 			}
 		}
 	}
