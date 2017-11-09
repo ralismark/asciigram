@@ -58,6 +58,34 @@ int idhere()
 	return of.target_id;
 }
 
+// like vim registers, for copying and pasting
+struct Register
+{
+	std::unique_ptr<Drawable> contents;
+	int x, y; // original positions
+public:
+	void remove_here()
+	{
+		int id = idhere();
+		if(id == -1) {
+			return;
+		}
+
+		contents = std::move(es.elements[id]);
+		es.elements.erase(es.elements.begin() + id);
+		x = cur.x;
+		y = cur.y;
+	}
+
+	void paste_here()
+	{
+		if(contents) {
+			es.elements.emplace_back(std::move(contents));
+			es.elements.back()->shift(cur.x - x, cur.y - y);
+		}
+	}
+} clip;
+
 // wrapper for when we need to actually switch around layers
 void setmode(Mode m);
 
@@ -134,9 +162,10 @@ struct NormalMode
 			}
 			break;
 		case 'x':
-			if(here != -1) {
-				es.elements.erase(es.elements.begin() + here);
-			}
+			clip.remove_here();
+			break;
+		case 'p':
+			clip.paste_here();
 			break;
 		case 'b':
 			setmode(Mode::Box);
@@ -205,7 +234,7 @@ struct BoxMode
 	{
 		switch(val) {
 		case 'x':
-			es.elements.pop_back();
+			clip.remove_here();
 			setmode(Mode::Normal);
 			break;
 		case 'b':
