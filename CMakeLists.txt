@@ -16,5 +16,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(main main.cpp)
 
-add_executable(nc nc/frontend.cpp)
+add_executable(nc nc/frontend.cpp nc/globals.cpp nc/cursor.cpp nc/modes.cpp nc/clip.cpp)
 target_link_libraries(nc ncurses)

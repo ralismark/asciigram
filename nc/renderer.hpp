@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../drawable.hpp"
 #include "../canvas.hpp"
-#include "../item/box.hpp" // Avoid ncurese collision
 
 #include <ncurses.h>
 
+// RAII object for curses initialisation, config and finalisation
 struct CursesSetup
 {
 	CursesSetup()
@@ -23,6 +22,7 @@ struct CursesSetup
 	}
 };
 
+// Draw elements as curses
 struct CursesRenderer
 	: public Canvas
 {
