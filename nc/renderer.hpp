@@ -43,4 +43,9 @@ public:
 	{
 		mvhline(y, x1, fill, x2 - x1);
 	}
+
+	virtual void impl_direct(const std::string& str, int x, int y) override
+	{
+		mvprintw(y, x, "%s", str.c_str());
+	}
 };
