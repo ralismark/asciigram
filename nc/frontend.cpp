@@ -12,6 +12,8 @@ int main()
 	CursesSetup cs;
 	CursesRenderer crender;
 
+	init_pair(10, COLOR_BLACK, COLOR_GREEN);
+
 	// 0: Universal
 	ls.layers.emplace_back(std::make_unique<Universal>());
 
@@ -49,11 +51,17 @@ int main()
 			break;
 		}
 
-		mvprintw(0, 0, "-- %s --", mode_name);
+		attron(COLOR_PAIR(10));
+		mvhline(0, 0, ' ', region.x);
+		mvprintw(0, 1, "%d/%d -- %s --", 1 + idhere(), es.elements.size(), mode_name);
 
-		auto clamp = [] (int val, int high) { return val < 0 ? 0 : val > high ? high : val; };
+		auto clamp = [] (int val, int low, int high) { return val < low ? low : val > high ? high : val; };
+		cur.y = clamp(cur.y, 1, region.y - 1);
+		cur.x = clamp(cur.x, 0, region.x - 1);
 
-		move(clamp(cur.y, region.y - 1), clamp(cur.x, region.x - 1));
+		attroff(COLOR_PAIR(10));
+
+		move(cur.y, cur.x);
 		refresh();
 
 		ls.post();

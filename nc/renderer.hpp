@@ -10,10 +10,12 @@ struct CursesSetup
 	CursesSetup()
 	{
 		initscr();
+		start_color();
 
 		cbreak();
 		keypad(stdscr, true);
 		noecho();
+		ESCDELAY = 100;
 	}
 
 	~CursesSetup()

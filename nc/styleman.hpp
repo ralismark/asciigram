@@ -40,7 +40,7 @@ public:
 public:
 	StyleChanger(std::shared_ptr<BoxStyle> style = std::make_shared<BoxStyle>())
 		: style(style)
-		, win(newwin(5, 20, 10, 10))
+		, win(newwin(6, 10, 10, 10))
 		, curs_save(curs_set(0))
 	{
 	}
@@ -62,12 +62,14 @@ public:
 			auto elem = *at_id(i + 1, nonull);
 			char disp = elem ? elem : ' ';
 
-			mvwaddch(win, 1 + i / 3, 7 + i % 3, disp);
+			mvwaddch(win, 2 + i / 3, 7 + i % 3, disp);
 		}
 
-		mvwprintw(win, 1, 2, "123");
-		mvwprintw(win, 2, 2, "456");
-		mvwprintw(win, 3, 2, "789");
+		mvwprintw(win, 2, 2, "123");
+		mvwprintw(win, 3, 2, "456");
+		mvwprintw(win, 4, 2, "789");
+
+		mvwprintw(win, 1, 2, "Set style");
 
 		box(win, 0, 0);
 		wrefresh(win);
