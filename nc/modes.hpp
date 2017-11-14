@@ -284,12 +284,17 @@ struct InsertMode // {{{
 
 	virtual bool event(int val) override
 	{
+		Text& text = *es.back_as<Text>();
+
 		if(isprint(val)) {
-			es.back_as<Text>()->string.push_back(val);
+			text.string.push_back(val);
 			++cur.x;
-			return false;
-		}
-		switch(val) {
+		} else switch(val) {
+		case '\r': case '\n':
+			text.string.push_back('\n');
+			cur.x = text.x;
+			++cur.y;
+			break;
 		case KEY_BACKSPACE:
 			if(!es.back_as<Text>()->string.empty()) {
 				es.back_as<Text>()->string.pop_back();
