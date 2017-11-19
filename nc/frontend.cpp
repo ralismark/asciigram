@@ -43,9 +43,6 @@ int main()
 		case Mode::Insert:
 			mode_name = "Insert";
 			break;
-		case Mode::InsertBlock:
-			mode_name = "InsertBlock";
-			break;
 		case Mode::Move:
 			mode_name = "Move";
 			break;

@@ -17,7 +17,6 @@ enum class Mode {
 	Move,
 	Box,
 	Insert,
-	InsertBlock,
 
 	Quit,
 };
