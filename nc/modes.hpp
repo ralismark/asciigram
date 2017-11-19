@@ -29,28 +29,58 @@ void setmode(Mode m);
 struct StyleChangerLayer // {{{
 	: public Layer
 {
-	StyleChanger sc;
-	int part;
-	char val;
+	WINDOW* win;
+	int cursor_save; // Save cursor style
+	int part_id; // picked part
+	char save_part; // previous style
 public:
 	StyleChangerLayer()
-		: sc(sm.get_default())
-		, part(0)
-		, val(0)
+		: win(newwin(5, 15, 10, 10))
+		, cursor_save(curs_set(0)) // hide cursor
+		, part_id(0)
+		, save_part(0)
 	{
+	}
+
+	~StyleChangerLayer()
+	{
+		delwin(win);
+		curs_set(cursor_save);
+	}
+
+	char* at_id(int val) const
+	{
+		BoxStyle& style = *sm.get_default();
+
+		char* refs[] = {
+			&style.tl_corner,
+			&style.tside,
+			&style.tr_corner,
+			&style.lside,
+			&style.fill,
+			&style.rside,
+			&style.bl_corner,
+			&style.bside,
+			&style.br_corner
+		};
+
+		if(1 <= val && val <= 9) {
+			return refs[val - 1];
+		}
+		return nullptr;
 	}
 
 	virtual bool event(int ev) override
 	{
-		if(part != 0) {
+		if(part_id != 0) {
 			if(isprint(ev)) {
-				*sc.at_id(part, *sc.style) = ev;
+				*this->at_id(part_id) = ev;
 			} else if(ev == KEY_BACKSPACE) {
-				*sc.at_id(part, *sc.style) = Canvas::Transparent;
+				*this->at_id(part_id) = Canvas::Transparent;
 			} else {
-				*sc.at_id(part, *sc.style) = val;
+				*this->at_id(part_id) = save_part;
 			}
-			part = 0;
+			part_id = 0;
 			return false;
 		}
 
@@ -58,25 +88,24 @@ public:
 		case 'q':
 		case 's':
 		case '\033':
-			ls.layers.pop_back();
+			ls.layers.pop_back(); // quit
 			break;
 		case '1': case '2': case '3':
 		case '4': case '5': case '6':
 		case '7': case '8': case '9':
-			part = ev - '0';
-			val = *sc.at_id(part, *sc.style);
-			*sc.at_id(part, *sc.style) = '#';
+			part_id = ev - '0';
+			save_part = *this->at_id(part_id);
+			*this->at_id(part_id) = '#';
 			break;
 		case '+':
+			// copy current
 			sm.styles.emplace_back(std::make_shared<BoxStyle>(*sm.get_default()));
 			break;
 		case ']':
 			std::rotate(sm.styles.begin(), sm.styles.begin() + 1, sm.styles.end());
-			sc.style = sm.get_default();
 			break;
 		case '[':
 			std::rotate(sm.styles.begin(), sm.styles.end() - 1, sm.styles.end());
-			sc.style = sm.get_default();
 			break;
 		}
 		return false;
@@ -84,7 +113,19 @@ public:
 
 	virtual void post() override
 	{
-		sc.render();
+		box(win, 0, 0); // standard border
+
+		for(int i = 0; i < 9; ++i) {
+			auto elem = *this->at_id(i + 1);
+			mvwaddch(win, 1 + (i / 3), 7 + (i % 3), elem ? elem : ' ');
+		}
+
+		mvwprintw(win, 1, 2, "123");
+		mvwprintw(win, 2, 2, "456");
+		mvwprintw(win, 3, 2, "789");
+
+		mvwprintw(win, 0, 2, " Set style ");
+		wrefresh(win);
 	}
 }; // }}}
 
