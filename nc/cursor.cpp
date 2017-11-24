@@ -1,6 +1,6 @@
 #include "cursor.hpp"
 
-coord cur;
+point cur;
 
 int idhere()
 {

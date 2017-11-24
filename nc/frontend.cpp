@@ -3,6 +3,8 @@
 #include "modes.hpp"
 #include "renderer.hpp"
 
+#include "../base.hpp"
+
 #include <ncurses.h>
 
 int main()
@@ -22,7 +24,7 @@ int main()
 	setmode(Mode::Normal);
 
 	for(int input = ' '; true; input = getch()) {
-		coord region;
+		point region;
 		getmaxyx(stdscr, region.y, region.x);
 		erase();
 

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <algorithm>
-
+#include "../base.hpp"
 #include "../canvas.hpp"
 #include "../drawable.hpp"
+
+#include <algorithm>
 
 // TODO: Add styling
 
@@ -71,16 +72,6 @@ struct Arrow
 	{
 		Vertical,
 		Horizontal,
-	};
-
-	struct point
-	{
-		int x, y;
-	public:
-		point(int x, int y)
-			: x(x), y(y)
-		{
-		}
 	};
 public:
 	point start;

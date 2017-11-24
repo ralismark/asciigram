@@ -3,13 +3,9 @@
 #include "globals.hpp"
 
 #include "../canvas.hpp"
+#include "../base.hpp"
 
-struct coord
-{
-	int x, y;
-};
-
-extern coord cur;
+extern point cur;
 
 struct OwnerFinder
 	: public Canvas

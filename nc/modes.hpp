@@ -366,7 +366,7 @@ struct ArrowMode // {{{
 	{
 		Arrow& arrow = *es.back_as<Arrow>();
 
-		Arrow::point* second_last = nullptr;
+		point* second_last = nullptr;
 		if(arrow.points.size() >= 2) {
 			second_last = &(arrow.points.rbegin() + 1)->first;
 		}
