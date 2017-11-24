@@ -7,6 +7,7 @@
 
 #include "../item/box.hpp"
 #include "../item/text.hpp"
+#include "../item/arrow.hpp"
 
 #include <ncurses.h>
 #include <cctype>
@@ -17,6 +18,7 @@ enum class Mode {
 	Move,
 	Box,
 	Insert,
+	Arrow,
 
 	Quit,
 };
@@ -200,6 +202,9 @@ struct NormalMode // {{{
 		case 'i':
 			setmode(Mode::Insert);
 			break;
+		case 'a':
+			setmode(Mode::Arrow);
+			break;
 		case 'm':
 			if(here != -1) {
 				setmode(Mode::Move);
@@ -348,3 +353,49 @@ struct InsertMode // {{{
 	}
 }; // }}}
 
+struct ArrowMode // {{{
+	: public Layer
+{
+	ArrowMode()
+	{
+		es.add<Arrow>(cur.x, cur.y);
+		es.back_as<Arrow>()->add_point(cur.x, cur.y);
+	}
+
+	virtual bool event(int val) override
+	{
+		Arrow& arrow = *es.back_as<Arrow>();
+
+		Arrow::point* second_last = nullptr;
+		if(arrow.points.size() >= 2) {
+			second_last = &(arrow.points.rbegin() + 1)->first;
+		}
+
+		switch(val) {
+		case 'x':
+			clip.remove_here();
+			setmode(Mode::Normal);
+			break;
+		case 'a':
+			if(second_last && cur.x == second_last->x && cur.y == second_last->y) {
+				setmode(Mode::Normal);
+			} else {
+				arrow.add_point(cur.x, cur.y);
+			}
+			break;
+		case 'o':
+			arrow.flip_last();
+			break;
+		default:
+			return true;
+		}
+		return false;
+	}
+
+	virtual void frame() override
+	{
+		Arrow& arrow = *es.back_as<Arrow>();
+		arrow.points.back().first.x = cur.x;
+		arrow.points.back().first.y = cur.y;
+	}
+}; // }}}

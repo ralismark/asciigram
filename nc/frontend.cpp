@@ -46,6 +46,9 @@ int main()
 		case Mode::Move:
 			mode_name = "Move";
 			break;
+		case Mode::Arrow:
+			mode_name = "Arrow";
+			break;
 		}
 
 		attron(COLOR_PAIR(10));
