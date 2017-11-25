@@ -52,7 +52,7 @@ public:
 
 	char* at_id(int val) const
 	{
-		BoxStyle& style = *sm.get_default();
+		BoxStyle& style = *msm.get<BoxStyle>().get_first();
 
 		char* refs[] = {
 			&style.tl_corner,
@@ -101,13 +101,13 @@ public:
 			break;
 		case '+':
 			// copy current
-			sm.styles.emplace_back(std::make_shared<BoxStyle>(*sm.get_default()));
+			msm.get<BoxStyle>().duplicate_first();
 			break;
 		case ']':
-			std::rotate(sm.styles.begin(), sm.styles.begin() + 1, sm.styles.end());
+			msm.get<BoxStyle>().unshift();
 			break;
 		case '[':
-			std::rotate(sm.styles.begin(), sm.styles.end() - 1, sm.styles.end());
+			msm.get<BoxStyle>().shift();
 			break;
 		}
 		return false;
@@ -272,7 +272,7 @@ struct BoxMode // {{{
 {
 	BoxMode()
 	{
-		es.add<Box>(cur.x, cur.y, sm.get_default());
+		es.add<Box>(cur.x, cur.y, msm.get<BoxStyle>().get_first());
 	}
 
 	virtual bool event(int val) override

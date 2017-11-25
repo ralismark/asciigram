@@ -1,5 +1,5 @@
 #include "globals.hpp"
 
-StyleManager sm;
+MultiStyleManager msm;
 ElementStack es;
 LayerStack ls;
