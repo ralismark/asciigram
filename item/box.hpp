@@ -3,19 +3,10 @@
 #include "../canvas.hpp"
 #include "../drawable.hpp"
 
+#include "../style/box.hpp"
+
 #include <memory>
 #include <utility>
-
-struct BoxStyle
-{
-	// horizontal and vertical sides
-	char tside = 0, bside = 0, rside = 0, lside = 0;
-	// corners: top left, top right, bottom left, bottom right
-	char tl_corner = 0, tr_corner = 0, bl_corner = 0, br_corner = 0;
-
-	// what to fill the box (with spaces)
-	char fill = 0;
-};
 
 struct Box
 	: public Drawable

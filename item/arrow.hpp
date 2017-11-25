@@ -4,69 +4,15 @@
 #include "../canvas.hpp"
 #include "../drawable.hpp"
 
+#include "../style/arrow.hpp"
+
 #include <algorithm>
 
 // TODO: Add styling
 
-// // TODO: maybe reuse BoxStyle if we're going with 8-directional arrows
-// struct HeadStyle
-// {
-// 	// Symbol for each arrow direction
-// 	char left = 0, down = 0, up = 0, right = 0;
-// };
-
-// // style for main part of arrow
-// struct LineStyle
-// {
-// 	// Symbol for arrow directions
-// 	char vertical = 0, horizontal = 0;
-// 	// corners: top left, top right, bottom left, bottom right
-// 	char tl_corner = 0, tr_corner = 0, bl_corner = 0, br_corner = 0;
-// };
-
-// struct ArrowStyle
-// {
-// 	// Style for first and last symbol
-// 	HeadStyle head, tail;
-// 	LineStyle line;
-// };
-
-// struct WhirlArrow
-// 	: public Drawable
-// {
-// 	// Which way to go when confused
-// 	enum Direction
-// 	{
-// 		Vertical,
-// 		Horizontal,
-// 	};
-// public:
-// 	std::vector<std::pair<int, int>> points;
-// 	Direction direction;
-// 	std::shared_ptr<ArrowStyle> style;
-// public:
-// 	Arrow(int x, int y, std::shared_ptr<ArrowStyle> style)
-// 		: x1(x), y1(y), x2(x), y2(y), direction(Horizontal), style(style)
-// 	{
-// 	}
-// };
-
 struct Arrow
 	: public Drawable
 {
-	struct Style
-	{
-		// arrows
-		char up = 0, down = 0, right = 0, left = 0;
-		// corners: top left, top right, bottom left, bottom right
-		char tl = 0, tr = 0, bl = 0, br = 0;
-
-		char vertical = 0, horizontal = 0;
-
-		// what to fill the box (with spaces)
-		char marker = 0;
-	};
-
 	// whether to go vertical or horizontal first
 	enum Direction
 	{
