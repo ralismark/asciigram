@@ -58,8 +58,10 @@ public:
 
 	virtual bool event(int ev) override
 	{
+		auto display_points = msm.get<T>().get_display_points();
+
 		if(part_id != -1) {
-			char* part = msm.get<T>().get_display_points()[part_id].first;
+			char* part = display_points[part_id].first;
 			if(isprint(ev)) {
 				*part = ev;
 			} else if(ev == KEY_BACKSPACE) {
@@ -73,9 +75,9 @@ public:
 
 		std::string ph = placeholders;
 		auto idx = ph.find(ev);
-		if(idx != std::string::npos) {
+		if(idx != std::string::npos && idx < display_points.size()) {
 			part_id = idx;
-			char* part = msm.get<T>().get_display_points()[part_id].first;
+			char* part = display_points[part_id].first;
 			save_part = *part;
 			*part = '#';
 			return false;
