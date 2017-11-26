@@ -353,7 +353,7 @@ struct ArrowMode // {{{
 {
 	ArrowMode()
 	{
-		es.add<Arrow>(cur.x, cur.y);
+		es.add<Arrow>(cur.x, cur.y, msm.get<ArrowStyle>().get_first());
 		es.back_as<Arrow>()->add_point(cur.x, cur.y);
 	}
 

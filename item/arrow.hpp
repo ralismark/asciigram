@@ -23,10 +23,10 @@ public:
 	point start;
 	std::vector<std::pair<point, Direction>> points; // points to pass through, with direction
 
-	// std::shared_ptr<ArrowStyle> style;
+	std::shared_ptr<ArrowStyle> style;
 public:
-	Arrow(int x, int y/*, std::shared_ptr<ArrowStyle> style*/)
-		: start(x, y), points()/*, style(style)*/
+	Arrow(int x, int y, std::shared_ptr<ArrowStyle> style)
+		: start(x, y), points(), style(style)
 	{
 	}
 
@@ -79,20 +79,26 @@ public:
 			auto& to = segment.first;
 
 			if(segment.second == Vertical) {
-				canvas.linev('|', from.x, std::min(from.y, to.y), std::max(from.y, to.y) + 1);
-				canvas.lineh('-', std::min(from.x, to.x), to.y, std::max(from.x, to.x) + 1);
+				canvas.linev(style->vertical, from.x, std::min(from.y, to.y), std::max(from.y, to.y) + 1);
+				canvas.lineh(style->horizontal, std::min(from.x, to.x), to.y, std::max(from.x, to.x) + 1);
 			} else {
-				canvas.lineh('-', std::min(from.x, to.x), from.y, std::max(from.x, to.x) + 1);
-				canvas.linev('|', to.x, std::min(from.y, to.y), std::max(from.y, to.y) + 1);
+				canvas.lineh(style->horizontal, std::min(from.x, to.x), from.y, std::max(from.x, to.x) + 1);
+				canvas.linev(style->vertical, to.x, std::min(from.y, to.y), std::max(from.y, to.y) + 1);
 			}
 
 			from = to;
 		}
 
-		// draw markers
 		for(auto& marker : this->get_all_markers()) {
-			canvas.set('o', marker.x, marker.y);
+			// TODO: Corners and arrows
 		}
+
+		// draw markers
+		for(auto& segment : points) {
+			auto& mark = segment.first;
+			canvas.set(style->marker, mark.x, mark.y);
+		}
+
 	}
 
 	virtual void shift(int x, int y) override
