@@ -3,6 +3,7 @@
 #include "clip.hpp"
 #include "cursor.hpp"
 #include "globals.hpp"
+#include "help.hpp"
 #include "layer.hpp"
 
 #include "../item/box.hpp"
@@ -141,6 +142,9 @@ struct Universal // {{{
 		case '\033': // escape to normal
 			setmode(Mode::Normal);
 			break;
+		case '?':
+			ls.layers.emplace_back(std::make_unique<HelpLayer>());
+			break;
 		case 'h':
 			--cur.x;
 			break;
@@ -187,9 +191,6 @@ struct NormalMode // {{{
 	{
 		int here = idhere();
 		switch(val) {
-		case '?':
-			mvprintw(1, 0, "id here: %d", here);
-			break;
 		case 'x':
 			clip.remove_here();
 			break;
