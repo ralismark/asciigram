@@ -24,7 +24,6 @@ int main()
 	setmode(Mode::Normal);
 
 	for(int input = ' '; true; input = getch()) {
-		point region;
 		getmaxyx(stdscr, region.y, region.x);
 		erase();
 

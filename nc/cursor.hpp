@@ -6,6 +6,7 @@
 #include "../base.hpp"
 
 extern point cur;
+extern point region;
 
 struct OwnerFinder
 	: public Canvas
