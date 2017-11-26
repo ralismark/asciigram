@@ -127,7 +127,7 @@ public:
 		mvwprintw(win, 3, 2, "789");
 
 		mvwprintw(win, 0, 2, " Set style ");
-		wrefresh(win);
+		wnoutrefresh(win);
 	}
 }; // }}}
 

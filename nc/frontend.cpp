@@ -64,9 +64,11 @@ int main()
 		attroff(COLOR_PAIR(10));
 
 		move(cur.y, cur.x);
-		refresh();
+		wnoutrefresh(stdscr);
 
 		ls.post();
+
+		doupdate();
 
 		if(mode == Mode::Quit) {
 			break;
