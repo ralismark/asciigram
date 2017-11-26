@@ -29,20 +29,25 @@ extern Mode mode;
 void setmode(Mode m);
 
 // change styles
+template <typename T>
 struct StyleChangerLayer // {{{
 	: public Layer
 {
+	static constexpr const char* placeholders = "1234567890asdfghjklzxcvbnm";
 	WINDOW* win;
 	int cursor_save; // Save cursor style
+
 	int part_id; // picked part
 	char save_part; // previous style
 public:
 	StyleChangerLayer()
-		: win(newwin(5, 15, 10, 10))
+		: win(nullptr)
 		, cursor_save(curs_set(0)) // hide cursor
-		, part_id(0)
+		, part_id(-1)
 		, save_part(0)
 	{
+		auto max = msm.get<T>().get_display_range();
+		win = newwin(max.y + 4, std::max(17, max.x * 2 + 11), 10, 10); // 17 for title
 	}
 
 	~StyleChangerLayer()
@@ -51,64 +56,43 @@ public:
 		curs_set(cursor_save);
 	}
 
-	char* at_id(int val) const
-	{
-		BoxStyle& style = *sm.get_default();
-
-		char* refs[] = {
-			&style.tl_corner,
-			&style.tside,
-			&style.tr_corner,
-			&style.lside,
-			&style.fill,
-			&style.rside,
-			&style.bl_corner,
-			&style.bside,
-			&style.br_corner
-		};
-
-		if(1 <= val && val <= 9) {
-			return refs[val - 1];
-		}
-		return nullptr;
-	}
-
 	virtual bool event(int ev) override
 	{
-		if(part_id != 0) {
+		if(part_id != -1) {
+			char* part = msm.get<T>().get_display_points()[part_id].first;
 			if(isprint(ev)) {
-				*this->at_id(part_id) = ev;
+				*part = ev;
 			} else if(ev == KEY_BACKSPACE) {
-				*this->at_id(part_id) = Canvas::Transparent;
+				*part = Canvas::Transparent;
 			} else {
-				*this->at_id(part_id) = save_part;
+				*part = save_part;
 			}
-			part_id = 0;
+			part_id = -1;
+			return false;
+		}
+
+		std::string ph = placeholders;
+		auto idx = ph.find(ev);
+		if(idx != std::string::npos) {
+			part_id = idx;
+			char* part = msm.get<T>().get_display_points()[part_id].first;
+			save_part = *part;
+			*part = '#';
 			return false;
 		}
 
 		switch(ev) {
 		case 'q':
-		case 's':
-		case '\033':
-			ls.layers.pop_back(); // quit
-			break;
-		case '1': case '2': case '3':
-		case '4': case '5': case '6':
-		case '7': case '8': case '9':
-			part_id = ev - '0';
-			save_part = *this->at_id(part_id);
-			*this->at_id(part_id) = '#';
+			ls.layers.pop_back();
 			break;
 		case '+':
-			// copy current
-			sm.styles.emplace_back(std::make_shared<BoxStyle>(*sm.get_default()));
+			msm.get<T>().duplicate_first();
 			break;
 		case ']':
-			std::rotate(sm.styles.begin(), sm.styles.begin() + 1, sm.styles.end());
+			msm.get<T>().unshift();
 			break;
 		case '[':
-			std::rotate(sm.styles.begin(), sm.styles.end() - 1, sm.styles.end());
+			msm.get<T>().shift();
 			break;
 		}
 		return false;
@@ -116,18 +100,24 @@ public:
 
 	virtual void post() override
 	{
+		werase(win);
 		box(win, 0, 0); // standard border
 
-		for(int i = 0; i < 9; ++i) {
-			auto elem = *this->at_id(i + 1);
-			mvwaddch(win, 1 + (i / 3), 7 + (i % 3), elem ? elem : ' ');
+		auto max = msm.get<T>().get_display_range();
+
+		int idx = 0;
+		for(auto& part : msm.get<T>().get_display_points()) {
+			mvwaddch(win, part.second.y + 1, part.second.x + 2, placeholders[idx]);
+			if(*part.first != '\0') {
+				mvwaddch(win, part.second.y + 1, part.second.x + max.x + 7, *part.first);
+			}
+
+			++idx;
 		}
 
-		mvwprintw(win, 1, 2, "123");
-		mvwprintw(win, 2, 2, "456");
-		mvwprintw(win, 3, 2, "789");
+		mvwvline(win, 1, max.x + 5, ACS_VLINE, max.y + 2);
 
-		mvwprintw(win, 0, 2, " Set style ");
+		mvwprintw(win, 0, 2, " Change style ");
 		wnoutrefresh(win);
 	}
 }; // }}}
@@ -212,7 +202,10 @@ struct NormalMode // {{{
 			}
 			break;
 		case 's':
-			ls.layers.emplace_back(std::make_unique<StyleChangerLayer>());
+			ls.layers.emplace_back(std::make_unique<StyleChangerLayer<BoxStyle>>());
+			break;
+		case 'S':
+			ls.layers.emplace_back(std::make_unique<StyleChangerLayer<ArrowStyle>>());
 			break;
 		case '<': // lower
 			if(here > 0) {
@@ -273,7 +266,7 @@ struct BoxMode // {{{
 {
 	BoxMode()
 	{
-		es.add<Box>(cur.x, cur.y, sm.get_default());
+		es.add<Box>(cur.x, cur.y, msm.get<BoxStyle>().get_first());
 	}
 
 	virtual bool event(int val) override

@@ -1,8 +1,10 @@
 #pragma once
 
 #include "layer.hpp"
-#include "styleman.hpp"
 
-extern StyleManager sm;
+#include "../drawable.hpp"
+#include "../multistyle.hpp"
+
+extern MultiStyleManager msm;
 extern ElementStack es;
 extern LayerStack ls;
