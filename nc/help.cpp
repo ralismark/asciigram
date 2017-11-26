@@ -47,7 +47,8 @@ bindings usable almost everywhere.
         i       Enter insert mode
         a       Enter arrow mode
         m       Enter move mode (with element under cursor)
-        s       Open box style pop-up
+        s       Open style pop-up for boxes
+        S       Open style pop-up for arrows
         <       Lower item below cursor by one level
         >       Raise item below cursor by one level
 
@@ -97,22 +98,28 @@ expanding or contracting it.
         o       Change orientation of the current segment
 
 ========== Style Pop-up ========================================================
-  The style pop-up can be used to change the style used for new and existing
-  elements. Currently, this is only available for boxes.
 
-  .- Set style -. The numbers on the left correspond to the parts of a box on
-  | 123  .-.    | the right. Pressing a number, then the new character for the
-  | 456  | |    | part, will change the style. This new character can also be
-  | 789  '-'    | backspace to be transparent.
-  '-------------'
+                           .- Change style .
+                           |       |       |
+                           |  123  |  .-.  |
+                    e.g.   |  456  |  | |  |
+                           |  789  |  '-'  |
+                           |       |       |
+                           '---------------'
+
+  The style pop-up can be used to change the style used for new and existing
+  elements. The numbers/letters on the left are used to select what the part of
+  the object on the right to change style for. After pressing the letter, the
+  new character for that part can be pressed to set it. Escape cancels it, and
+  backspace makes it transparent.
+
 
         q       Close the style pop-up
-        s       Same as q
         +       Duplicate the current style
         [       Switch to the previous style
         ]       Switch to the next style
 
-  The style which is used for new elements is the currently shown on in the
+  The style which is used for new elements is the currently shown one in the
   dialog, which can be changed with [ and ].
 
 ========== Pending Features/TODO ===============================================

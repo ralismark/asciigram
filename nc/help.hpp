@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cursor.hpp"
 #include "globals.hpp"
 #include "layer.hpp"
 
