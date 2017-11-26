@@ -24,7 +24,6 @@ int main()
 	setmode(Mode::Normal);
 
 	for(int input = ' '; true; input = getch()) {
-		point region;
 		getmaxyx(stdscr, region.y, region.x);
 		erase();
 
@@ -55,7 +54,7 @@ int main()
 
 		attron(COLOR_PAIR(10));
 		mvhline(0, 0, ' ', region.x);
-		mvprintw(0, 1, "%d/%d -- %s --", 1 + idhere(), es.elements.size(), mode_name);
+		mvprintw(0, 1, "%d/%d -- %s -- '?' for help", 1 + idhere(), es.elements.size(), mode_name);
 
 		auto clamp = [] (int val, int low, int high) { return val < low ? low : val > high ? high : val; };
 		cur.y = clamp(cur.y, 1, region.y - 1);
@@ -64,9 +63,11 @@ int main()
 		attroff(COLOR_PAIR(10));
 
 		move(cur.y, cur.x);
-		refresh();
+		wnoutrefresh(stdscr);
 
 		ls.post();
+
+		doupdate();
 
 		if(mode == Mode::Quit) {
 			break;

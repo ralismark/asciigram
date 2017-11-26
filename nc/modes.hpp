@@ -3,6 +3,7 @@
 #include "clip.hpp"
 #include "cursor.hpp"
 #include "globals.hpp"
+#include "help.hpp"
 #include "layer.hpp"
 
 #include "../item/box.hpp"
@@ -117,7 +118,7 @@ public:
 		mvwvline(win, 1, max.x + 5, ACS_VLINE, max.y + 2);
 
 		mvwprintw(win, 0, 2, " Change style ");
-		wrefresh(win);
+		wnoutrefresh(win);
 	}
 }; // }}}
 
@@ -130,6 +131,9 @@ struct Universal // {{{
 		switch(val) {
 		case '\033': // escape to normal
 			setmode(Mode::Normal);
+			break;
+		case '?':
+			ls.layers.emplace_back(std::make_unique<HelpLayer>());
 			break;
 		case 'h':
 			--cur.x;
@@ -177,9 +181,6 @@ struct NormalMode // {{{
 	{
 		int here = idhere();
 		switch(val) {
-		case '?':
-			mvprintw(1, 0, "id here: %d", here);
-			break;
 		case 'x':
 			clip.remove_here();
 			break;

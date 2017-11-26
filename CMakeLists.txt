@@ -14,7 +14,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Project Sources
 #######################
 
-add_executable(main main.cpp)
-
-add_executable(nc nc/frontend.cpp nc/globals.cpp nc/cursor.cpp nc/modes.cpp nc/clip.cpp)
+add_executable(nc nc/frontend.cpp nc/globals.cpp nc/cursor.cpp nc/modes.cpp nc/clip.cpp nc/help.cpp)
 target_link_libraries(nc ncurses)
