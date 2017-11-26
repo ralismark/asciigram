@@ -83,6 +83,7 @@ public:
 
 		switch(ev) {
 		case 'q':
+		case '\033':
 			ls.layers.pop_back();
 			break;
 		case '+':
