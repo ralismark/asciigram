@@ -22,10 +22,22 @@ public:
 		y = cur.y;
 	}
 
+	void yank_here()
+	{
+		int id = idhere();
+		if(id == -1) {
+			return;
+		}
+
+		contents = es.elements[id]->clone();
+		x = cur.x;
+		y = cur.y;
+	}
+
 	void paste_here()
 	{
 		if(contents) {
-			es.elements.emplace_back(std::move(contents));
+			es.elements.emplace_back(contents->clone());
 			es.elements.back()->shift(cur.x - x, cur.y - y);
 		}
 	}

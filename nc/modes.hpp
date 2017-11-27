@@ -191,6 +191,9 @@ struct NormalMode // {{{
 		case 'x':
 			clip.remove_here();
 			break;
+		case 'y':
+			clip.yank_here();
+			break;
 		case 'p':
 			clip.paste_here();
 			break;
