@@ -139,15 +139,19 @@ struct Universal // {{{
 			ls.layers.emplace_back(std::make_unique<HelpLayer>());
 			break;
 		case 'h':
+		case KEY_LEFT:
 			--cur.x;
 			break;
 		case 'j':
+		case KEY_DOWN:
 			++cur.y;
 			break;
 		case 'k':
+		case KEY_UP:
 			--cur.y;
 			break;
 		case 'l':
+		case KEY_RIGHT:
 			++cur.x;
 			break;
 		case 'H':
@@ -242,15 +246,19 @@ public:
 		if(id != -1) {
 			switch(val) {
 			case 'h':
+			case KEY_LEFT:
 				es.elements[id]->shift(-1, 0);
 				break;
 			case 'j':
+			case KEY_DOWN:
 				es.elements[id]->shift(0, 1);
 				break;
 			case 'k':
+			case KEY_UP:
 				es.elements[id]->shift(0, -1);
 				break;
 			case 'l':
+			case KEY_RIGHT:
 				es.elements[id]->shift(1, 0);
 				break;
 			}
