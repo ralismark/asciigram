@@ -346,9 +346,18 @@ struct InsertMode // {{{
 			++cur.y;
 			break;
 		case KEY_BACKSPACE:
-			if(!es.back_as<Text>()->string.empty()) {
-				es.back_as<Text>()->string.pop_back();
-				--cur.x;
+			if(!text.string.empty()) {
+				auto back = text.string.back();
+				text.string.pop_back();
+				if(back == '\n') {
+					--cur.y;
+					cur.x = text.x;
+					for(auto it = text.string.rbegin(); it != text.string.rend() && *it != '\n'; ++it) {
+						++cur.x;
+					}
+				} else {
+					--cur.x;
+				}
 			}
 			break;
 		default:
