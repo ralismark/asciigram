@@ -30,6 +30,11 @@ public:
 	{
 	}
 
+	virtual std::unique_ptr<Drawable> clone() const
+	{
+		return std::make_unique<Arrow>(*this);
+	}
+
 	void flip_last()
 	{
 		auto& dir = points.back().second;

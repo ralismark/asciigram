@@ -33,6 +33,11 @@ public:
 	{
 	}
 
+	virtual std::unique_ptr<Drawable> clone() const
+	{
+		return std::make_unique<Box>(*this);
+	}
+
 	int width() const
 	{
 		int raw_width = x1 - x2;

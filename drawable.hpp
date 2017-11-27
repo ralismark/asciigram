@@ -10,6 +10,7 @@
 struct Drawable
 {
 	virtual ~Drawable() = default;
+	virtual std::unique_ptr<Drawable> clone() const = 0;
 
 	virtual void draw(Canvas& canvas) const = 0;
 	virtual void shift(int x, int y) = 0;
@@ -25,6 +26,11 @@ public:
 		for(auto& elem : elements) {
 			elem->draw(canvas);
 		}
+	}
+
+	virtual std::unique_ptr<Drawable> clone() const
+	{
+		return nullptr; // no copies
 	}
 
 	virtual void shift(int x, int y)

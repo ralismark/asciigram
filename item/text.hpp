@@ -14,6 +14,11 @@ public:
 	{
 	}
 
+	virtual std::unique_ptr<Drawable> clone() const
+	{
+		return std::make_unique<Text>(*this);
+	}
+
 	virtual void draw(Canvas& canvas) const override
 	{
 		int line_y = y;
