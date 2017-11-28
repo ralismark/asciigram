@@ -30,7 +30,13 @@ public:
 
 	virtual std::unique_ptr<Drawable> clone() const
 	{
-		return nullptr; // no copies
+		std::vector<std::unique_ptr<Drawable>> elements_copy;
+		for(auto& elem : elements) {
+			copy.push_back(elem.clone());
+		}
+		auto copy = std::make_unique<ElementStack>();
+		copy.elements = std::move(elements_copy);
+		return copy;
 	}
 
 	virtual void shift(int x, int y)

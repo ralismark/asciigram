@@ -76,7 +76,7 @@ public:
 	void linev(char fill, int x, int y1, int y2)
 	{
 		if(fill != Transparent) {
-			this->impl_linev(fill, x, y1, y2);
+			this->impl_linev(fill, x, std::min(y1, y2), std::max(y1, y2));
 		}
 	}
 
@@ -85,7 +85,7 @@ public:
 	void lineh(char fill, int x1, int y, int x2)
 	{
 		if(fill != Transparent) {
-			this->impl_lineh(fill, x1, y, x2);
+			this->impl_lineh(fill, std::min(x1, x2), y, std::max(x1, x2));
 		}
 	}
 
@@ -94,7 +94,8 @@ public:
 	void fill(char fill, int x1, int y1, int x2, int y2)
 	{
 		if(fill != Transparent) {
-			this->impl_fill(fill, x1, y1, x2, y2);
+			this->impl_fill(fill, std::min(x1, x2), std::min(y1, y2),
+				std::max(x1, x2), std::max(y1, y2));
 		}
 	}
 
@@ -102,10 +103,9 @@ public:
 	// ensure: s does not contain '\0'
 	void direct(const std::string& s, int x, int y)
 	{
-		if(s.size() == 0) {
-			return;
+		if(!s.empty()) {
+			this->impl_direct(s, x, y);
 		}
-		this->impl_direct(s, x, y);
 	}
 
 	// draw a drawable onto itself
