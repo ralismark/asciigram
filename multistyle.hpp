@@ -1,12 +1,23 @@
 #pragma once
 
+/**
+ * \file
+ * This file defines MultiStyleManager, which is a type to contain and manage
+ * multiple StyleManagers (for different styles).
+ */
+
 #include "style.hpp"
 
 #include <map>
 #include <typeindex>
 #include <typeinfo>
 
-// Manages styles for multiple types
+/**
+ * Container for multiple style types.
+ *
+ * This provides a non-template container for the (templated) StyleManager,
+ * automatically constructing a new StyleManager when needed.
+ */
 struct MultiStyleManager
 {
 	// To store StyleManagers
@@ -31,6 +42,9 @@ struct MultiStyleManager
 	// type erased StyleManagers
 	std::map<std::type_index, std::unique_ptr<TypeErased>> stylemans;
 public:
+	/**
+	 * Clear and construct (if needed) a StyleManager for type \p T.
+	 */
 	template <typename T>
 	StyleManager<T>& reset()
 	{
@@ -40,6 +54,10 @@ public:
 		return *ref;
 	}
 
+	/**
+	 * Access a StyleManager for a specific type \p T, constructing it if
+	 * needed. This is similar to operator[] for std::map.
+	 */
 	template <typename T>
 	StyleManager<T>& get()
 	{
