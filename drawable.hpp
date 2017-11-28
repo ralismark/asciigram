@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fwd.hpp"
 
 #include <vector>
 #include <memory>

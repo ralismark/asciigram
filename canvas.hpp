@@ -1,13 +1,14 @@
 #pragma once
 
-#include "drawable.hpp"
-#include "fwd.hpp"
 
-#include <iostream>
+#include "drawable.hpp"
 
 /// Interface to draw to
 /// You need to implement impl_set, though can optionally implement any number
 /// of the impl_* functions
+#include <string>
+#include <algorithm>
+
 struct Canvas
 {
 	/// Special characters when drawing
