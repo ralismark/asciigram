@@ -36,12 +36,12 @@ public:
 
 	virtual void impl_linev(char fill, int x, int y1, int y2) override
 	{
-		mvvline(y1, x, fill, y2 - y1);
+		mvvline(y1, x, fill, y2 - y1 + 1);
 	}
 
 	virtual void impl_lineh(char fill, int x1, int y, int x2) override
 	{
-		mvhline(y, x1, fill, x2 - x1);
+		mvhline(y, x1, fill, x2 - x1 + 1);
 	}
 
 	virtual void impl_direct(const std::string& str, int x, int y) override
