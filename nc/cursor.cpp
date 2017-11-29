@@ -14,3 +14,36 @@ int idhere()
 	}
 	return of.target_id;
 }
+
+struct OwnerFinderRegion
+	: public Canvas
+{
+	std::set<int> included;
+	point min, max;
+	int current_id;
+public:
+	OwnerFinderRegion(int minx, int miny, int maxx, int maxy)
+		: min(minx, miny), max(maxx, maxy)
+	{
+	}
+
+	virtual void impl_set(char fill, int x, int y) override
+	{
+		if(min.x <= x && x <= max.x &&
+			min.y <= y && y <= max.y) {
+			included.insert(current_id);
+		}
+	}
+};
+
+std::set<int> id_in_region(int x1, int y1, int x2, int y2)
+{
+	OwnerFinderRegion ofr{std::min(x1, x2), std::min(y1, y2),
+		std::max(x1, x2), std::max(y1, y2)};
+
+	for(int i = 0; i < es.elements.size(); ++i) {
+		ofr.current_id = i;
+		ofr.draw(*es.elements[i]);
+	}
+	return std::move(ofr.included);
+}
