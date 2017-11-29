@@ -258,9 +258,61 @@ public:
 
 	virtual bool event(int val) override
 	{
+		auto ids = id_in_region(p1.x, p1.y, p2.x, p2.y);
+
+		auto make_group = [&] {
+			ElementStack group;
+			int offset = 0;
+			for(auto& id : ids) { // ids are sorted
+				auto it = es.elements.begin() + id + offset;
+				if(auto* old_stack = dynamic_cast<ElementStack*>(it->get())) {
+					// unpack the stack
+					for(auto& elem : old_stack->elements) {
+						group.elements.push_back(std::move(elem));
+					}
+				} else {
+					group.elements.push_back(std::move(*it));
+				}
+				es.elements.erase(it);
+				--offset;
+			}
+			ids.clear(); // ids are invalid
+			return group;
+		};
+
+		// not a visual operation - propagate
+		bool more = false;
+
 		switch(val) {
 		case 'v':
+			break;
+		case 'o':
+			std::swap(p1, p2);
 			return false;
+		case 'O':
+			std::swap(p1.x, p2.y);
+			return false;
+		case 'g':
+			es.elements.push_back(std::make_unique<ElementStack>(make_group()));
+			break;
+		case 'y':
+			clip.contents = make_group();
+			clip.x = cur.x;
+			clip.y = cur.y;
+			break;
+		case 'x':
+			make_group(); // destruct to kill
+			break;
+		default:
+			more = true;
+		}
+
+		if(!more) {
+			setmode(Mode::Normal);
+			return false;
+		}
+
+		switch(val) {
 		case 'H':
 			this->shift(1, 0);
 			break;
