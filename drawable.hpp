@@ -32,10 +32,10 @@ public:
 	{
 		std::vector<std::unique_ptr<Drawable>> elements_copy;
 		for(auto& elem : elements) {
-			copy.push_back(elem.clone());
+			elements_copy.push_back(elem->clone());
 		}
 		auto copy = std::make_unique<ElementStack>();
-		copy.elements = std::move(elements_copy);
+		copy->elements = std::move(elements_copy);
 		return copy;
 	}
 

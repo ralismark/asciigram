@@ -38,14 +38,17 @@ int main()
 		case Mode::Normal:
 			mode_name = "Normal";
 			break;
+		case Mode::Visual:
+			mode_name = "Visual";
+			break;
+		case Mode::Move:
+			mode_name = "Move";
+			break;
 		case Mode::Box:
 			mode_name = "Box";
 			break;
 		case Mode::Insert:
 			mode_name = "Insert";
-			break;
-		case Mode::Move:
-			mode_name = "Move";
 			break;
 		case Mode::Arrow:
 			mode_name = "Arrow";
