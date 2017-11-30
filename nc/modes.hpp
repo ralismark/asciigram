@@ -280,6 +280,22 @@ public:
 			return group;
 		};
 
+		auto copy_group = [&] {
+			ElementStack group;
+			for(auto& id : ids) { // ids are sorted
+				auto it = es.elements.begin() + id;
+				if(auto* old_stack = dynamic_cast<ElementStack*>(it->get())) {
+					// unpack the stack
+					for(auto& elem : old_stack->elements) {
+						group.elements.push_back(elem->clone());
+					}
+				} else {
+					group.elements.push_back((*it)->clone());
+				}
+			}
+			return group;
+		};
+
 		// not a visual operation - propagate
 		bool more = false;
 
@@ -296,7 +312,7 @@ public:
 			es.elements.push_back(std::make_unique<ElementStack>(make_group()));
 			break;
 		case 'y':
-			clip.contents = make_group();
+			clip.contents = std::make_unique<ElementStack>(copy_group());
 			clip.x = cur.x;
 			clip.y = cur.y;
 			break;
