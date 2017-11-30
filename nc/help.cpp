@@ -43,6 +43,7 @@ bindings usable almost everywhere.
 
         x       Remove the top element under the cursor (into the clipboard)
         p       Paste the item in the clipboard, keeping the offset of the cursor
+        v       Enter visual (block) mode
         b       Enter box mode
         i       Enter insert mode
         a       Enter arrow mode
@@ -62,6 +63,22 @@ bindings usable almost everywhere.
         j       Move element down
         k       Move element up
         l       Move element right
+
+========== Visual Mode =========================================================
+  Visual mode allows you to select elements in a rectangular region and perform
+  operations on multiple elements. Notably, you can group them, allowing you
+  to act as if several elements are one. Every element that the selection
+  touches is considered part of the selection.
+
+        v       Exit visual mode and return to normal mode
+        o       Go to Other end of box, as if the current cursor position was
+                  the start of the box, and continue dragging out the box from
+                  the original start
+        O       Go to the Opposite side of the same line, changing from right
+                  corner to left (and vice versa). Similar to (lower-case) o
+        g       Combine selected elements into a single group
+        c       Delete selected elements
+        y       Copy selected elements into clipboard as a group.
 
 ========== Box Mode ============================================================
   Rectangular boxes can be drawn in this mode. The box can be dragged out by
