@@ -84,11 +84,11 @@ public:
 			auto& to = segment.first;
 
 			if(segment.second == Vertical) {
-				canvas.linev(style->vertical, from.x, std::min(from.y, to.y), std::max(from.y, to.y) + 1);
-				canvas.lineh(style->horizontal, std::min(from.x, to.x), to.y, std::max(from.x, to.x) + 1);
+				canvas.linev(style->vertical, from.x, std::min(from.y, to.y), std::max(from.y, to.y));
+				canvas.lineh(style->horizontal, std::min(from.x, to.x), to.y, std::max(from.x, to.x));
 			} else {
-				canvas.lineh(style->horizontal, std::min(from.x, to.x), from.y, std::max(from.x, to.x) + 1);
-				canvas.linev(style->vertical, to.x, std::min(from.y, to.y), std::max(from.y, to.y) + 1);
+				canvas.lineh(style->horizontal, std::min(from.x, to.x), from.y, std::max(from.x, to.x));
+				canvas.linev(style->vertical, to.x, std::min(from.y, to.y), std::max(from.y, to.y));
 			}
 
 			from = to;
