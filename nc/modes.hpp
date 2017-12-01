@@ -16,6 +16,7 @@
 
 enum class Mode {
 	Normal,
+	Visual,
 	Move,
 	Box,
 	Insert,
@@ -197,6 +198,9 @@ struct NormalMode // {{{
 		case 'p':
 			clip.paste_here();
 			break;
+		case 'v':
+			setmode(Mode::Visual);
+			break;
 		case 'b':
 			setmode(Mode::Box);
 			break;
@@ -231,6 +235,135 @@ struct NormalMode // {{{
 			return true;
 		}
 		return false;
+	}
+}; // }}}
+
+struct VisualMode // {{{
+	: public Layer
+{
+	point p1, p2;
+public:
+	VisualMode()
+		: p1(cur), p2(cur)
+	{
+	}
+
+	void shift(int x, int y) {
+		p1.x += x;
+		p1.y += y;
+
+		p2.x += x;
+		p2.y += y;
+	}
+
+	virtual bool event(int val) override
+	{
+		auto ids = id_in_region(p1.x, p1.y, p2.x, p2.y);
+
+		auto make_group = [&] {
+			ElementStack group;
+			int offset = 0;
+			for(auto& id : ids) { // ids are sorted
+				auto it = es.elements.begin() + id + offset;
+				if(auto* old_stack = dynamic_cast<ElementStack*>(it->get())) {
+					// unpack the stack
+					for(auto& elem : old_stack->elements) {
+						group.elements.push_back(std::move(elem));
+					}
+				} else {
+					group.elements.push_back(std::move(*it));
+				}
+				es.elements.erase(it);
+				--offset;
+			}
+			ids.clear(); // ids are invalid
+			return group;
+		};
+
+		auto copy_group = [&] {
+			ElementStack group;
+			for(auto& id : ids) { // ids are sorted
+				auto it = es.elements.begin() + id;
+				if(auto* old_stack = dynamic_cast<ElementStack*>(it->get())) {
+					// unpack the stack
+					for(auto& elem : old_stack->elements) {
+						group.elements.push_back(elem->clone());
+					}
+				} else {
+					group.elements.push_back((*it)->clone());
+				}
+			}
+			return group;
+		};
+
+		// not a visual operation - propagate
+		bool more = false;
+
+		switch(val) {
+		case 'v':
+			break;
+		case 'o':
+			std::swap(p1, p2);
+			return false;
+		case 'O':
+			std::swap(p1.x, p2.y);
+			return false;
+		case 'g':
+			es.elements.push_back(std::make_unique<ElementStack>(make_group()));
+			break;
+		case 'y':
+			clip.contents = std::make_unique<ElementStack>(copy_group());
+			clip.x = cur.x;
+			clip.y = cur.y;
+			break;
+		case 'x':
+			make_group(); // destruct to kill
+			break;
+		default:
+			more = true;
+		}
+
+		if(!more) {
+			setmode(Mode::Normal);
+			return false;
+		}
+
+		switch(val) {
+		case 'H':
+			this->shift(1, 0);
+			break;
+		case 'J':
+			this->shift(0, -1);
+			break;
+		case 'K':
+			this->shift(0, 1);
+			break;
+		case 'L':
+			this->shift(-1, 0);
+			break;
+		}
+		return true;
+	}
+
+	virtual void frame() override
+	{
+		p2 = cur;
+	}
+
+	virtual void post() override
+	{
+		point min{ std::min(p1.x, p2.x), std::min(p1.y, p2.y) };
+		point max{ std::max(p1.x, p2.x), std::max(p1.y, p2.y) };
+
+		int width = max.x - min.x + 1;
+
+		for(int y = min.y; y <= max.y; ++y) {
+			mvchgat(y, min.x, width, WA_NORMAL, 11, nullptr);
+		}
+
+		// redo this manually, since this would break dialogs if moved after
+		move(cur.y, cur.x);
+		wnoutrefresh(stdscr);
 	}
 }; // }}}
 

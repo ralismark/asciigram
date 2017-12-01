@@ -15,6 +15,7 @@ int main()
 	CursesRenderer crender;
 
 	init_pair(10, COLOR_BLACK, COLOR_GREEN);
+	init_pair(11, COLOR_WHITE, COLOR_RED);
 
 	// 0: Universal
 	ls.layers.emplace_back(std::make_unique<Universal>());

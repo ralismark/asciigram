@@ -24,6 +24,9 @@ void setmode(Mode m)
 	case Mode::Arrow:
 		ls.layers[1] = std::make_unique<ArrowMode>();
 		break;
+	case Mode::Visual:
+		ls.layers[1] = std::make_unique<VisualMode>();
+		break;
 	case Mode::Quit:
 		break;
 	default:
