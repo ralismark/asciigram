@@ -54,18 +54,6 @@ public:
 		return std::make_unique<Box>(*this);
 	}
 
-	int width() const
-	{
-		int raw_width = x1 - x2;
-		return raw_width > 0 ? raw_width : -raw_width;
-	}
-
-	int height() const
-	{
-		int raw_height = y1 - y2;
-		return raw_height > 0 ? raw_height : -raw_height;
-	}
-
 	// ensures that (x1, y1) are less than (x2, y2)
 	/**
 	 * Swap around values to ensure that (x1, y1) is less than (x2, y2).
