@@ -1,5 +1,10 @@
 #include "help.hpp"
 
+/**
+ * The actual help message. Since global variable are somewhat messy, a
+ * function returning a constant provides similar functionality without any
+ * negatives.
+ */
 static const char* helpmsg()
 {
 	return R"(
@@ -152,6 +157,9 @@ implemented, some of which are integral to its use.
 
 }
 
+/**
+ * Split a string into its lines.
+ */
 static std::vector<std::string> split_lines(const std::string& s)
 {
 	std::vector<std::string> lines;

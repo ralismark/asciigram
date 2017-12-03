@@ -1,14 +1,28 @@
 #pragma once
 
+/**
+ * \file
+ * This file defines Register, a class which acts as a clipboard.
+ */
+
 #include "globals.hpp"
 #include "cursor.hpp"
 
 // like vim registers, for copying and pasting
+/**
+ * A container for a single Drawable, with operations for a clipboard. Offset
+ * from the cursor is maintained, so pasting will correctly move the element.
+ *
+ * The naming comes from Vim registers, which are their equivalent of clipboards.
+ */
 struct Register
 {
 	std::unique_ptr<Drawable> contents;
 	int x, y; // original positions
 public:
+	/**
+	 * Remove the element currently under the cursor into the register.
+	 */
 	void remove_here()
 	{
 		int id = idhere();
@@ -22,6 +36,9 @@ public:
 		y = cur.y;
 	}
 
+	/**
+	 * Clone the element under the cursor, putting the copy into the clipboard.
+	 */
 	void yank_here()
 	{
 		int id = idhere();
@@ -34,6 +51,10 @@ public:
 		y = cur.y;
 	}
 
+	/**
+	 * Paste the item currently in the clipboard, fixing up the offset from
+	 * the cursor.
+	 */
 	void paste_here()
 	{
 		if(contents) {
@@ -43,4 +64,7 @@ public:
 	}
 };
 
+/**
+ * The main clipboard used in the program.
+ */
 extern Register clip;
