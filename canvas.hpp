@@ -54,7 +54,7 @@ protected:
 	// assume: str does not contain '\0'
 	virtual void impl_direct(const std::string& str, int x, int y)
 	{
-		for(int idx = 0; idx < str.size(); ++idx) {
+		for(unsigned int idx = 0; idx < str.size(); ++idx) {
 			this->impl_set(str[idx], x + idx, y);
 		}
 	}

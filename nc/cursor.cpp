@@ -6,7 +6,7 @@ point region;
 int idhere()
 {
 	OwnerFinder of(cur.x, cur.y);
-	for(int i = 0; i < es.elements.size(); ++i) {
+	for(unsigned int i = 0; i < es.elements.size(); ++i) {
 		// need to manually set id for each element
 		// can't draw es directly
 		of.current_id = i;
@@ -27,7 +27,7 @@ public:
 	{
 	}
 
-	virtual void impl_set(char fill, int x, int y) override
+	virtual void impl_set(char /* fill */, int x, int y) override
 	{
 		if(min.x <= x && x <= max.x &&
 			min.y <= y && y <= max.y) {
@@ -41,7 +41,7 @@ std::set<int> id_in_region(int x1, int y1, int x2, int y2)
 	OwnerFinderRegion ofr{std::min(x1, x2), std::min(y1, y2),
 		std::max(x1, x2), std::max(y1, y2)};
 
-	for(int i = 0; i < es.elements.size(); ++i) {
+	for(unsigned int i = 0; i < es.elements.size(); ++i) {
 		ofr.current_id = i;
 		ofr.draw(*es.elements[i]);
 	}

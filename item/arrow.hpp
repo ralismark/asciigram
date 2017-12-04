@@ -94,9 +94,9 @@ public:
 			from = to;
 		}
 
-		for(auto& marker : this->get_all_markers()) {
-			// TODO: Corners and arrows
-		}
+		// TODO: Corners and arrows
+		// for(auto& marker : this->get_all_markers()) {
+		// }
 
 		// draw markers
 		for(auto& segment : points) {

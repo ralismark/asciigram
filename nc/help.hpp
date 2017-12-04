@@ -16,7 +16,7 @@ struct HelpLayer // {{{
 {
 	WINDOW* win;
 	int cursor_save; // Save cursor style
-	int line;
+	unsigned int line;
 public:
 	HelpLayer()
 		: win(newwin(region.y - 20, 100, 10, 10))
@@ -76,7 +76,7 @@ public:
 		getmaxyx(win, height, width);
 
 		int printing_line = 2;
-		for(int i = line; i < helplines().size() && printing_line < height - 1; ++i, ++printing_line) {
+		for(unsigned int i = line; i < helplines().size() && printing_line < height - 1; ++i, ++printing_line) {
 			mvwaddstr(win, printing_line, 2, helplines()[i].c_str());
 		}
 

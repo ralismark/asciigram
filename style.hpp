@@ -31,7 +31,7 @@ public:
 		return styles.front();
 	}
 
-	std::shared_ptr<T> duplicate_first()
+	void duplicate_first()
 	{
 		styles.emplace_back(std::make_shared<T>(*this->get_first()));
 		this->unshift();

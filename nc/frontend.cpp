@@ -54,6 +54,9 @@ int main()
 		case Mode::Arrow:
 			mode_name = "Arrow";
 			break;
+		case Mode::Quit:
+			// nothing needs to be done
+			break;
 		}
 
 		attron(COLOR_PAIR(10));

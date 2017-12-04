@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	virtual void impl_set(char fill, int x, int y) override
+	virtual void impl_set(char /* fill */, int x, int y) override
 	{
 		if(x == tx && y == ty) {
 			target_id = current_id;

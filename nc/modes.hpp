@@ -227,7 +227,7 @@ struct NormalMode // {{{
 			}
 			break;
 		case '>': // higher
-			if(here != -1 && here < es.elements.size() - 1) {
+			if(here != -1 && here < static_cast<int>(es.elements.size()) - 1) {
 				std::swap(es.elements[here], es.elements[here + 1]);
 			}
 			break;
