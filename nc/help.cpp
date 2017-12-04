@@ -135,6 +135,8 @@ expanding or contracting it.
   new character for that part can be pressed to set it. Escape cancels it, and
   backspace makes it transparent.
 
+  After pressing the placeholder, the corresponding component is temporarily set to '#'
+  both in the style dialog and for all elements.
 
         q       Close the style pop-up
         +       Duplicate the current style
