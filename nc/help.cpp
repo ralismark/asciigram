@@ -1,5 +1,10 @@
 #include "help.hpp"
 
+/**
+ * The actual help message. Since global variable are somewhat messy, a
+ * function returning a constant provides similar functionality without any
+ * negatives.
+ */
 static const char* helpmsg()
 {
 	return R"(
@@ -130,6 +135,8 @@ expanding or contracting it.
   new character for that part can be pressed to set it. Escape cancels it, and
   backspace makes it transparent.
 
+  After pressing the placeholder, the corresponding component is temporarily set to '#'
+  both in the style dialog and for all elements.
 
         q       Close the style pop-up
         +       Duplicate the current style
@@ -152,6 +159,9 @@ implemented, some of which are integral to its use.
 
 }
 
+/**
+ * Split a string into its lines.
+ */
 static std::vector<std::string> split_lines(const std::string& s)
 {
 	std::vector<std::string> lines;

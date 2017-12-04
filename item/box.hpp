@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * \file
+ * This defined the Box Drawable, which is a rectangle with a border. Styling
+ * defined by ../style/box.hpp.
+ */
+
 #include "../canvas.hpp"
 #include "../drawable.hpp"
 
@@ -7,6 +13,13 @@
 
 #include <memory>
 #include <utility>
+
+/**
+ * A rectangle with a styled border.
+ *
+ * This represents a rectangle, which can have a special border (as defined by
+ * BoxStyle).
+ */
 
 struct Box
 	: public Drawable
@@ -33,24 +46,20 @@ public:
 	{
 	}
 
+	/**
+	 * Create a copy of the current Box.
+	 */
 	virtual std::unique_ptr<Drawable> clone() const
 	{
 		return std::make_unique<Box>(*this);
 	}
 
-	int width() const
-	{
-		int raw_width = x1 - x2;
-		return raw_width > 0 ? raw_width : -raw_width;
-	}
-
-	int height() const
-	{
-		int raw_height = y1 - y2;
-		return raw_height > 0 ? raw_height : -raw_height;
-	}
-
 	// ensures that (x1, y1) are less than (x2, y2)
+	/**
+	 * Swap around values to ensure that (x1, y1) is less than (x2, y2).
+	 * This ensures that \a 1 is the top left corner, and \ 2 is the bottom
+	 * right one.
+	 */
 	void normalise()
 	{
 		if(x1 > x2) {
@@ -61,6 +70,12 @@ public:
 		}
 	}
 
+	/**
+	 * Draw the box.
+	 *
+	 * If the corners are transparent, they are drawn as vertical sections,
+	 * otherwise horizontal if they are also transparent.
+	 */
 	virtual void draw(Canvas& canvas) const override
 	{
 		auto norm = *this;
@@ -79,6 +94,9 @@ public:
 		canvas.set(style->br_corner, norm.x2, norm.y2);
 	}
 
+	/**
+	 * Move entire object by (\p x, \p y).
+	 */
 	virtual void shift(int x, int y) override
 	{
 		x1 += x;

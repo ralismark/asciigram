@@ -1,10 +1,21 @@
 #pragma once
 
+/**
+ * \file
+ * This file defines the classes used to interact with NCurses for a major
+ * portion of the program, such as rendering.
+ */
+
 #include "../canvas.hpp"
 
 #include <ncurses.h>
 
-// RAII object for curses initialisation, config and finalisation
+/**
+ * RAII object for NCurses initialisation and shutdown.
+ *
+ * A single instance of this object should be made in main(), then left there.
+ * The constructor and destructor does everything here.
+ */
 struct CursesSetup
 {
 	CursesSetup()
@@ -24,7 +35,12 @@ struct CursesSetup
 	}
 };
 
-// Draw elements as curses
+/**
+ * NCurses rendering of elements.
+ *
+ * This is an implementation of a Canvas that uses the NCurses API to draw
+ * elements.
+ */
 struct CursesRenderer
 	: public Canvas
 {

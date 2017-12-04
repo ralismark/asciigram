@@ -1,3 +1,8 @@
+/**
+ * \file
+ * The main file of the NCurses frontend, which defines main().
+ */
+
 #include "cursor.hpp"
 #include "globals.hpp"
 #include "modes.hpp"

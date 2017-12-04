@@ -1,5 +1,22 @@
 #pragma once
 
+/**
+ * \file
+ * This file defines the various layers used in the programs, many of which are
+ * also modes.
+ *
+ * The individual methods common to all layers are not documented - their
+ * features are explained in the help message in help.cpp.
+ *
+ * When adding a mode, several things need to be done:
+ * - Create mode class
+ * - Add enumeration to Mode
+ * - Handle the new enumeration in setmode() (in modes.cpp)
+ * - Handle it in main() (in frontend.cpp) as well to set the displayed string
+ * - Add way to enter mode (usually in Normal mode)
+ * - Document the new mode as well as the key to enter it in the help message (help.cpp)
+ */
+
 #include "clip.hpp"
 #include "cursor.hpp"
 #include "globals.hpp"
@@ -14,6 +31,12 @@
 #include <cctype>
 #include <algorithm>
 
+/**
+ * The various modes available in the program.
+ *
+ * With the exertion of the Quit pseudo-mode, these usually correspond to a
+ * layer with the same name, but with "Mode" appended.
+ */
 enum class Mode {
 	Normal,
 	Visual,
@@ -22,19 +45,47 @@ enum class Mode {
 	Insert,
 	Arrow,
 
-	Quit,
+	Quit, ///< This pseudo-mode is used to indicate when to exit the program.
 };
 
+/**
+ * The current mode.
+ *
+ * This is read-only, and should not be directly modified. To change the mode,
+ * use setmode().
+ */
 extern Mode mode;
 
+/**
+ * Change the current mode, replacing the mode layer with the corresponding
+ * mode.
+ *
+ * The old mode is destructed and the new one is constructed each time the mode
+ * changes.
+ */
 void setmode(Mode m);
 
-// change styles
+/**
+ * A pop-up for changing the style, templated on the style type.
+ *
+ * This non-mode layer shows a pop-up that allows the user to change styles, as
+ * well as duplicate them. This is used to style items differently.
+ *
+ * The pop-up has two sides, the left with placeholders, and the right with the
+ * actual elements for styling. Pressing the corresponding placeholder, and
+ * then the new style changes the corresponding part.
+ *
+ * More information about this is available in the help message.
+ */
 template <typename T>
 struct StyleChangerLayer // {{{
 	: public Layer
 {
+	/**
+	 * The sequence of letters/numbers to use for placeholders.
+	 */
 	static constexpr const char* placeholders = "1234567890asdfghjklzxcvbnm";
+public:
 	WINDOW* win;
 	int cursor_save; // Save cursor style
 
@@ -111,7 +162,10 @@ public:
 
 		int idx = 0;
 		for(auto& part : msm.get<T>().get_display_points()) {
+			// placeholder
 			mvwaddch(win, part.second.y + 1, part.second.x + 2, placeholders[idx]);
+
+			// existing component
 			if(*part.first != '\0') {
 				mvwaddch(win, part.second.y + 1, part.second.x + max.x + 7, *part.first);
 			}
@@ -119,6 +173,7 @@ public:
 			++idx;
 		}
 
+		// Draw split line
 		mvwvline(win, 1, max.x + 5, ACS_VLINE, max.y + 2);
 
 		mvwprintw(win, 0, 2, " Change style ");
@@ -126,7 +181,13 @@ public:
 	}
 }; // }}}
 
-// Default response to actions
+/**
+ * Universally available actions, common to all modes.
+ *
+ * This layer exists as index 0, below the mode layer (which is index 1). This
+ * layer handles basic movement functions, as well as ones useful across all
+ * modes. This includes the help pop-up and returning to normal mode.
+ */
 struct Universal // {{{
 	: public Layer
 {
@@ -182,6 +243,13 @@ struct Universal // {{{
 	}
 }; // }}}
 
+/**
+ * Basic mode for basic actions, such as entering other modes.
+ *
+ * This mode is for generic activity, such as basic element operations, and
+ * nothing too specific (which should have a dedicated mode/layer). In
+ * particular, this mode allows you to enter all other modes.
+ */
 struct NormalMode // {{{
 	: public Layer
 {
@@ -238,6 +306,11 @@ struct NormalMode // {{{
 	}
 }; // }}}
 
+/**
+ * Block selection mode, for working with multiple elements.
+ *
+ * The most notable feature here is the grouping functionality.
+ */
 struct VisualMode // {{{
 	: public Layer
 {
@@ -367,6 +440,9 @@ public:
 	}
 }; // }}}
 
+/**
+ * Move a particular element.
+ */
 struct MoveMode // {{{
 	: public Layer
 {
@@ -407,7 +483,9 @@ public:
 	}
 }; // }}}
 
-// drawing a box
+/**
+ * Draw a box, from the starting position to the cursor.
+ */
 struct BoxMode // {{{
 	: public Layer
 {
@@ -452,6 +530,9 @@ struct BoxMode // {{{
 	}
 }; // }}}
 
+/**
+ * Insert a block of (raw) text.
+ */
 struct InsertMode // {{{
 	: public Layer
 {
@@ -503,6 +584,9 @@ struct InsertMode // {{{
 	}
 }; // }}}
 
+/**
+ * Draw an arrow.
+ */
 struct ArrowMode // {{{
 	: public Layer
 {
