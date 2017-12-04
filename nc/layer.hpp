@@ -47,11 +47,21 @@ public:
 	virtual void post() {}
 };
 
-// a sequence of layers
+/**
+ * An ordered collection of layers, handling event propagation and frame/post
+ * actions.
+ */
 struct LayerStack
 {
 	std::vector<std::unique_ptr<Layer>> layers;
 public:
+	/**
+	 * Propagate an event from the top of the layer stack, stopping when
+	 * the bottom is reached or a layer stops propagation.
+	 *
+	 * Returns if the event passed through all layers without being
+	 * stopped (i.e. all layers returned true).
+	 */
 	bool event(Layer::event_type val)
 	{
 		for(auto it = layers.rbegin(); it != layers.rend(); ++it) {
@@ -65,6 +75,10 @@ public:
 		return true;
 	}
 
+	/**
+	 * Call Layout::frame() for all layers, doing so from the bottom to the
+	 * top.
+	 */
 	void frame()
 	{
 		for(auto& layer : layers) {
@@ -74,6 +88,10 @@ public:
 		}
 	}
 
+	/**
+	 * Call Layout::post() for all layers, doing so from the bottom to the
+	 * top.
+	 */
 	void post()
 	{
 		for(auto& layer : layers) {
