@@ -19,5 +19,5 @@ add_definitions(-Wall -Wextra -Werror)
 # Project Sources
 #######################
 
-add_executable(nc nc/frontend.cpp nc/globals.cpp nc/cursor.cpp nc/modes.cpp nc/clip.cpp nc/help.cpp)
+add_executable(nc nc/frontend.cpp nc/globals.cpp nc/cursor.cpp nc/modes.cpp nc/clip.cpp nc/help.cpp sysclip.cpp)
 target_link_libraries(nc ncurses)

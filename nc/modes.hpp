@@ -27,6 +27,9 @@
 #include "../item/text.hpp"
 #include "../item/arrow.hpp"
 
+#include "../asciirender.hpp"
+#include "../sysclip.hpp"
+
 #include <ncurses.h>
 #include <cctype>
 #include <algorithm>
@@ -389,6 +392,12 @@ public:
 			clip.x = cur.x;
 			clip.y = cur.y;
 			break;
+		case 'c':
+			{
+				AsciiRenderer ar{p1.x, p1.y, p2.x, p2.y};
+				es.draw(ar);
+				copy_to_sysclip(ar.joined());
+			} break;
 		case 'x':
 			make_group(); // destruct to kill
 			break;
