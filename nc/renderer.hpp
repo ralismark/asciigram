@@ -7,6 +7,7 @@
  */
 
 #include "../canvas.hpp"
+#include "../sysclip.cpp"
 
 #include <ncurses.h>
 
@@ -33,6 +34,7 @@ struct CursesSetup
 	~CursesSetup()
 	{
 		endwin();
+		deinit_sysclip();
 	}
 };
 

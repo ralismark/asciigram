@@ -6,3 +6,7 @@ bool copy_to_sysclip(const std::string& content)
 	((void)content);
 	return false;
 }
+
+void deinit_sysclip()
+{
+}

@@ -11,3 +11,11 @@
  * Returns if copied successfully.
  */
 bool copy_to_sysclip(const std::string& content);
+
+/**
+ * Clean up clipboard data.
+ *
+ * This allows the clipboard provider to do any necessary cleanup. This may be
+ * called without copy_to_sysclip() ever being called before.
+ */
+void deinit_sysclip();
