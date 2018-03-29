@@ -22,6 +22,7 @@ struct CursesSetup
 	{
 		initscr();
 		start_color();
+		use_default_colors();
 
 		cbreak();
 		keypad(stdscr, true);
