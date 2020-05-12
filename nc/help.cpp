@@ -46,8 +46,8 @@ bindings usable almost everywhere.
   You are able to perform basic operations on elements. From this mode, you can
   also go into modes for inserting various elements.
 
-        x       Remove the top element under the cursor (into the clipboard)
-        p       Paste the item in the clipboard, keeping the offset of the cursor
+        x       Remove the top element under the cursor (into the register)
+        p       Paste the item in the register, keeping the offset of the cursor
         v       Enter visual (block) mode
         b       Enter box mode
         i       Enter insert mode
@@ -82,8 +82,9 @@ bindings usable almost everywhere.
         O       Go to the Opposite side of the same line, changing from right
                   corner to left (and vice versa). Similar to (lower-case) o
         g       Combine selected elements into a single group
-        c       Delete selected elements
-        y       Copy selected elements into clipboard as a group.
+        x       Delete selected elements
+        c       Copy selected region into the system clipboard
+        y       Copy selected elements into register as a group
 
 ========== Box Mode ============================================================
   Rectangular boxes can be drawn in this mode. The box can be dragged out by
